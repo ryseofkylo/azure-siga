@@ -1,0 +1,113 @@
+---
+esquema: dbo
+tabla: V_CRMMOTIVO
+objeto: dbo.V_CRMMOTIVO
+tipo_objeto: VIEW
+dominio: Data Warehouse / BI
+canonico: true
+referencia: true
+grain: N/A (vista)
+n_columnas: 6
+tags:
+  - esquema/dbo
+  - dominio/data-warehouse-bi
+  - tipo/vista
+  - referencia
+---
+
+# dbo.V_CRMMOTIVO
+
+> ⚠️ **VISTA — REFERENCIA, no target de consulta.** Mostrá *cómo se armó* esta info; para consultar, andá a las tablas base de abajo.
+
+## Tablas base que consume
+- [[SIGASC.CRMMOTIVO1]]
+- [[SIGASC.CRMMOTIVO2]]
+- [[SIGASC.CRMMOTIVO3]]
+- [[SIGASC.CRMMOTIVO4]]
+
+## Columnas expuestas
+| # | Columna | Tipo | %null (m) |
+|--:|---|---|--:|
+| 1 | `EMPRESAID` | int | 0% |
+| 2 | `MOTIVOID` | varchar | 0% |
+| 3 | `CRMMOTIVO1NOM` | varchar | 0% |
+| 4 | `CRMMOTIVO2NOM` | varchar | 16% |
+| 5 | `CRMMOTIVO3NOM` | varchar | 51% |
+| 6 | `CRMMOTIVO4NOM` | varchar | 76% |
+
+## Definición (CREATE VIEW)
+```sql
+-- Vista: dbo.V_CRMMOTIVO
+-- Extraida: 2026-08-07T15:27:51.432065+00:00
+-- Fuente: sys.sql_modules / OBJECT_DEFINITION
+
+CREATE VIEW [V_CRMMOTIVO]
+AS SELECT DISTINCT
+		b.EMPRESAID,
+		CONCAT(b.EMPRESAID, '_', b.MOTIVO1, '_', b.MOTIVO2, '_', b.MOTIVO3, '_', b.MOTIVO4 ) AS MOTIVOID,
+		b.CRMMOTIVO1NOM, b.CRMMOTIVO2NOM, b.CRMMOTIVO3NOM, b.CRMMOTIVO4NOM
+FROM 
+(   SELECT a.EMPRESAID, a.PKCRMMOTIVO1, a.PKCRMMOTIVO2, a.PKCRMMOTIVO3, a.PKCRMMOTIVO4,
+			TRIM(a.crmmotivo1nom) AS CRMMOTIVO1NOM,
+			TRIM(a.crmmotivo2nom) AS CRMMOTIVO2NOM,
+			TRIM(a.crmmotivo3nom) AS CRMMOTIVO3NOM,
+			TRIM(a.crmmotivo4nom) AS CRMMOTIVO4NOM,
+			CASE WHEN a.pkcrmmotivo1 IS NULL THEN 0
+				ELSE SUBSTRING(a.pkcrmmotivo1,CHARINDEX('_',a.pkcrmmotivo1)+1,LEN(a.pkcrmmotivo1)) END AS MOTIVO1, 
+			CASE WHEN a.pkcrmmotivo2 IS NULL THEN 0
+				ELSE SUBSTRING(a.pkcrmmotivo2,CHARINDEX('_',a.pkcrmmotivo2)+1,LEN(a.pkcrmmotivo2)) END AS MOTIVO2, 
+			CASE WHEN a.pkcrmmotivo3 IS NULL THEN 0
+				ELSE SUBSTRING(a.pkcrmmotivo3,CHARINDEX('_',a.pkcrmmotivo3)+1,LEN(a.pkcrmmotivo3)) END AS MOTIVO3,
+			CASE WHEN a.pkcrmmotivo4 IS NULL THEN 0
+				ELSE SUBSTRING(a.pkcrmmotivo4,CHARINDEX('_',a.pkcrmmotivo4)+1,LEN(a.pkcrmmotivo4)) END AS MOTIVO4
+	FROM 
+    ---------------------------- CRUCE DE MOTIVOS RELACIONADOS
+	( 
+		( SELECT m1.EMPRESAID, 
+				 m1.PKCRMMOTIVO1, m1.CRMMOTIVO1NOM,		
+				 m2.PKCRMMOTIVO2, m2.CRMMOTIVO2NOM, 
+				 m3.PKCRMMOTIVO3, m3.CRMMOTIVO3NOM, 
+				 m4.PKCRMMOTIVO4, CASE WHEN ( m4.CRMMOTIVO4NOM = '' ) THEN NULL ELSE m4.CRMMOTIVO4NOM END AS CRMMOTIVO4NOM
+		  FROM SIGASC.CRMMOTIVO1 m1 
+		  LEFT JOIN SIGASC.CRMMOTIVO2 m2 ON (   m1.PKCRMMOTIVO1 = m2.PKCRMMOTIVO1 )
+		  LEFT JOIN SIGASC.CRMMOTIVO3 m3 ON ( ( m1.PKCRMMOTIVO1 = m3.PKCRMMOTIVO1 ) AND ( m2.PKCRMMOTIVO2 = m3.PKCRMMOTIVO2 ) )
+		  LEFT JOIN SIGASC.CRMMOTIVO4 m4
+		  ON (	    ( m1.PKCRMMOTIVO1 = m4.PKCRMMOTIVO1 ) AND ( m2.PKCRMMOTIVO2 = m4.PKCRMMOTIVO2 ) 
+				AND ( m3.PKCRMMOTIVO3 = m4.PKCRMMOTIVO3 ) )
+		WHERE TRIM(M1.CRMMOTIVO1NOM) <> 'CAMPANAS' 
+		)
+	---------------------------- CRUCE DE MOTIVOS 1 SIN RELACIÓN CON 2, 3 y 4.
+		UNION ALL
+		( SELECT m1.EMPRESAID, m1.PKCRMMOTIVO1, m1.CRMMOTIVO1NOM, 
+							   NULL, NULL, NULL, NULL, NULL, NULL
+		  FROM SIGASC.CRMMOTIVO1 m1
+		  WHERE TRIM(M1.CRMMOTIVO1NOM) <> 'CAMPANAS'
+		)
+	---------------------------- CRUCE DE MOTIVOS 1 y 2 SIN RELACIÓN CON 3 y 4.
+		UNION ALL
+		( SELECT m1.EMPRESAID, m1.PKCRMMOTIVO1, m1.CRMMOTIVO1NOM, 
+							   m2.PKCRMMOTIVO2, m2.CRMMOTIVO2NOM,
+							   NULL, NULL, NULL, NULL
+		  FROM SIGASC.CRMMOTIVO1 m1 
+		  LEFT JOIN SIGASC.CRMMOTIVO2 m2 ON ( m1.PKCRMMOTIVO1 = m2.PKCRMMOTIVO1 )
+		  WHERE TRIM(M1.CRMMOTIVO1NOM) <> 'CAMPANAS'
+		)
+	---------------------------- CRUCE DE MOTIVOS 1, 2 y 3 SIN RELACIÓN CON 4.	
+		UNION ALL
+		( SELECT m1.EMPRESAID, m1.PKCRMMOTIVO1, m1.CRMMOTIVO1NOM, 
+							   m2.PKCRMMOTIVO2, m2.CRMMOTIVO2NOM,
+							   m3.PKCRMMOTIVO3, m3.CRMMOTIVO3NOM, 
+							   NULL, NULL
+		  FROM SIGASC.CRMMOTIVO1 m1 
+		  LEFT JOIN SIGASC.CRMMOTIVO2 m2 ON ( m1.PKCRMMOTIVO1 = m2.PKCRMMOTIVO1 ) 
+		  LEFT JOIN SIGASC.CRMMOTIVO3 m3 ON ( ( m1.PKCRMMOTIVO1 = m3.PKCRMMOTIVO1 ) AND ( m2.PKCRMMOTIVO2 = m3.PKCRMMOTIVO2 ) ) 
+		  WHERE TRIM(M1.CRMMOTIVO1NOM) <> 'CAMPANAS'
+		)
+	---------------------------- CLASIFICACIÓN "SIN MOTIVO" PARA VALORES NULOS.	
+		UNION ALL
+		( SELECT DISTINCT m1.EMPRESAID, NULL, 'SIN MOTIVO', NULL, NULL, NULL, NULL, NULL, NULL
+		  FROM SIGASC.CRMMOTIVO1 m1
+		)
+    ) a
+) b;
+```

@@ -1,0 +1,40 @@
+---
+esquema: SAP_COMPRAS
+tabla: Centro
+objeto: SAP_COMPRAS.Centro
+tipo_objeto: BASE TABLE
+dominio: Compras y Finanzas (SAP)
+canonico: true
+grain: 1 fila = 1 `CODE` (único en muestra de 200)
+n_columnas: 4
+tags:
+  - esquema/SAP_COMPRAS
+  - dominio/compras-y-finanzas-_sap_
+  - tipo/tabla-base
+  - canonico
+---
+
+# SAP_COMPRAS.Centro
+
+> **BASE TABLE** · Dominio: **Compras y Finanzas (SAP)** · 4 columnas · Consultá esta tabla directamente (**tabla-first**).
+> **Grain (inferido):** 1 fila = 1 `CODE` (único en muestra de 200)
+
+## Columnas
+| # | Columna | Tipo | %null (m) |
+|--:|---|---|--:|
+| 1 | `CODE` | varchar | 0% |
+| 2 | `VALUE` | varchar | 0% |
+| 3 | `NAME2` | varchar | 0% |
+| 4 | `ORT01` | varchar | 29% |
+
+## Claves de join presentes
+_(sin claves detectadas)_
+
+## Relaciones (derivadas de JOINs de vistas)
+_(ninguna relación explícita hallada en vistas)_
+
+## Reglas de negocio conocidas
+_(ninguna regla derivada de vistas)_
+
+## Vistas que la consumen (referencia)
+_(ninguna)_

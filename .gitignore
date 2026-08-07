@@ -1,0 +1,8 @@
+# Estado local de Obsidian (no versionar)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.trash/
+
+# SO / editores
+.DS_Store
+Thumbs.db

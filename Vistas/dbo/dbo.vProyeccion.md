@@ -1,0 +1,1309 @@
+---
+esquema: dbo
+tabla: vProyeccion
+objeto: dbo.vProyeccion
+tipo_objeto: VIEW
+dominio: Data Warehouse / BI
+canonico: true
+referencia: true
+grain: N/A (vista)
+n_columnas: 61
+tags:
+  - esquema/dbo
+  - dominio/data-warehouse-bi
+  - tipo/vista
+  - referencia
+---
+
+# dbo.vProyeccion
+
+> ⚠️ **VISTA — REFERENCIA, no target de consulta.** Mostrá *cómo se armó* esta info; para consultar, andá a las tablas base de abajo.
+
+## Tablas base que consume
+- [[SIGASC.CLIENTETPO]]
+- [[SIGASC.PROMOCION]]
+- [[SIGASC.VM_CLIENTE]]
+- [[dbo.BI_FACTURA_DETALLE_ALL]]
+- [[dbo.BI_FACTURA_ENCABEZADO_ALL]]
+- [[dbo.vSENAL_PROYECCION]]
+
+## Columnas expuestas
+| # | Columna | Tipo | %null (m) |
+|--:|---|---|--:|
+| 1 | `empresaid` | int |  |
+| 2 | `clientenro` | int |  |
+| 3 | `PERIODO` | int |  |
+| 4 | `SUCURSALID` | int |  |
+| 5 | `clientetponom` | varchar |  |
+| 6 | `segmento` | int |  |
+| 7 | `facturacion` | float |  |
+| 8 | `tv_pol` | float |  |
+| 9 | `tv_desc` | float |  |
+| 10 | `tv_tpodto` | int |  |
+| 11 | `tiene_tv` | int |  |
+| 12 | `tv_rdp` | int |  |
+| 13 | `tv_promoclase` | int |  |
+| 14 | `inst_tv` | float |  |
+| 15 | `int_pol` | float |  |
+| 16 | `int_desc` | float |  |
+| 17 | `int_tpodto` | int |  |
+| 18 | `int_promoclase` | int |  |
+| 19 | `int_rdp` | int |  |
+| 20 | `tiene_int` | int |  |
+| 21 | `inst_int` | float |  |
+| 22 | `int_corpo_pol` | float |  |
+| 23 | `int_corpo_desc` | float |  |
+| 24 | `int_corpo_tpodto` | int |  |
+| 25 | `int_corpo_promoclase` | int |  |
+| 26 | `int_corpo_rdp` | int |  |
+| 27 | `tiene_int_corpo` | int |  |
+| 28 | `inst_int_corpo` | float |  |
+| 29 | `mio_pol` | float |  |
+| 30 | `mio_desc` | float |  |
+| 31 | `tiene_mio` | int |  |
+| 32 | `paramount_pol` | float |  |
+| 33 | `paramount_desc` | float |  |
+| 34 | `tiene_paramount` | int |  |
+| 35 | `UNIVERSAL_pol` | float |  |
+| 36 | `UNIVERSAL_desc` | float |  |
+| 37 | `tiene_UNIVERSAL` | int |  |
+| 38 | `asist_pol` | float |  |
+| 39 | `asist_desc` | float |  |
+| 40 | `tiene_asist` | int |  |
+| 41 | `decos_adic_pol` | float |  |
+| 42 | `decos_adic_desc` | float |  |
+| 43 | `tiene_decos_adic` | int |  |
+| 44 | `decos_pol` | float |  |
+| 45 | `decos_desc` | float |  |
+| 46 | `tiene_decos` | int |  |
+| 47 | `adulto_pol` | float |  |
+| 48 | `adulto_desc` | float |  |
+| 49 | `tiene_adultos` | int |  |
+| 50 | `HBO_pol` | float |  |
+| 51 | `HBO_desc` | float |  |
+| 52 | `tiene_hbo` | int |  |
+| 53 | `futbol_pol` | float |  |
+| 54 | `futbol_desc` | float |  |
+| 55 | `tiene_futbol` | int |  |
+| 56 | `bocas_pol` | float |  |
+| 57 | `bocas_desc` | float |  |
+| 58 | `tiene_bocas` | int |  |
+| 59 | `notacred` | float |  |
+| 60 | `notadeb` | float |  |
+| 61 | `factanterior` | float |  |
+
+## Definición (CREATE VIEW)
+```sql
+-- Vista: dbo.vProyeccion
+-- Extraida: 2026-08-07T15:28:33.460529+00:00
+-- Fuente: sys.sql_modules / OBJECT_DEFINITION
+
+CREATE VIEW [dbo].[vProyeccion]
+AS with Factura as(
+SELECT f.[EMPRESAID],f.[FACTURANRO],f.[FACTURATPO],f.[PERIODO],f.[FACTURAGEN]
+		  ,f.[IMPORTE],f.[IMPORTEDEV],f.[CLIENTENRO],f.[EMPRESA],f.[CLIENTEAPE],f.[CLIENTENOM],f.[CLIENTESTSNOMBRE]
+		  ,f.[CLIENTECITPO],f.[CLIENTECI],f.[CLIENTESTS],f.[NEGOCIOSEGMENTO],f.[CLIENTETPO],f.[CLIENTENATURALEZANOM]
+		  ,f.[MEDIO_COBRO],f.[REPARTO],f.[DEBITO_AUTOMATICO],f.[EMAIL_SIGA],f.[FECHAHORAFACTURA]
+		  ,f.[FECHAVTO],f.[FACTURANRONC]
+	  FROM BI_FACTURA_ENCABEZADO_ALL f
+		where PERIODO in (202406,202407) --<---- CAMBIAR
+		and f.empresaid <> 23
+)
+,detalle as(
+SELECT f.[EMPRESAID],f.[PERIODO],f.[CLIENTENRO],f.[FACTURATPO],f.[FACTURAGEN],f.[FACTURANRO]
+		,f.[TOTAL],f.[CUOTA],f.[NROLINEA],f.[IVA],f.[PRODUCTONOMBRE],f.[CONTRATONRO],f.[IMPORTE_LINEA],f.[CONCEPTO],f.[POLITICA]
+		,f.[PROMO],f.[COMBO],f.[PROMOID],f.[POLITICAID],f.[CPTOFACID],f.[COMBOID],f.[PRODUCTOID],f.[PRODUCTOTPO],f.[PRODUCTOPPL],f.[CuotaDesde]
+		,f.[CuotaHasta],sp.[SENALSUBTIPO]
+	FROM BI_FACTURA_DETALLE_ALL f
+	LEFT JOIN [dbo].[vSENAL_PROYECCION] sp
+	ON f.[EMPRESAID] = sp.[EMPRESAID]
+	AND f.[PRODUCTOID] = sp.[PRODUCTOID]
+	where PERIODO in (202406,202407) --<---- CAMBIAR
+	--PERIODO in (202402,202403,202404,202405) --<---- CAMBIAR
+	and f.empresaid <> 23
+)
+select 
+d.empresaid, d.clientenro,d.PERIODO,
+max(cl.SUCURSALID) AS SUCURSALID,MAX(ct.clientetponom) AS clientetponom,
+MAX(cl.negociosegmento) AS segmento,
+/*
+---------------------------LOGICA TV--------------------------------------------
+*/
+sum(case
+when  d.facturatpo = 'F'
+then d.importe_linea
+else 0
+end) as facturacion,
+sum(case
+when 
+d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and d.concepto not in(
+'DEVOLUCION POR REINTEGRO',
+'BONIF.INTERRUPCION DE SERVICIO',
+'BONIFICACION ESPECIAL',
+'BONIFICACION INTERRUPCION DE SERVICIO INTERNET',
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'PLAN DE PAGO',
+'RECARGO PAGO FUERA DE TERMINO',
+'RECARGO PAGO FUERA DE TERMINO MESES ANTERIORES',
+'RECONEXION CABLE',
+'RECONEXION INTERNET LITE',
+'REINTEGRO CUOTA',
+'REINTEGRO DE VENTAS',
+'REINTEGRO PARCIAL S/SERVICIO',
+'REINTEGRO PARCIAL SOBRE CUOTA',
+'REINTEGRO TOTAL SOBRE CUOTA',
+'REPARACION DECO',
+'REPOSICIàN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÀN EXTENSOR ROUTER',
+'REPOSICION CABLE HDMI/RCA',
+'REPOSICION CONTROL REMOTO',
+'REPOSICIÓN DECODIFICAR HD (HIBRIDO HOMECAST)',
+'REPOSICIÓN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÓN EXTENSOR WIFI',
+'REPOSICION FUENTE',
+'REPOSICION SMARTCARD',
+'REPOSICION TARJETA DECO',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'PAGO DUPLICADO',
+'PERCEPCION IIBB SAN LUIS',
+'PERCEPCION IIBB RIO NEGRO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'REINTEGRO PACK FÚTBOL MES ANTERIOR')
+then importe_linea
+else 0
+end ) as tv_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and d.CPTOFACID not in ('9341','9342','9343','9344')
+and d.concepto not in(
+'DEVOLUCION POR REINTEGRO',
+'BONIF.INTERRUPCION DE SERVICIO',
+'BONIFICACION ESPECIAL',
+'BONIFICACION INTERRUPCION DE SERVICIO INTERNET',
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'PLAN DE PAGO',
+'RECARGO PAGO FUERA DE TERMINO',
+'RECARGO PAGO FUERA DE TERMINO MESES ANTERIORES',
+'RECONEXION CABLE',
+'RECONEXION INTERNET LITE',
+'REINTEGRO CUOTA',
+'REINTEGRO DE VENTAS',
+'REINTEGRO PARCIAL S/SERVICIO',
+'REINTEGRO PARCIAL SOBRE CUOTA',
+'REINTEGRO TOTAL SOBRE CUOTA',
+'REPARACION DECO',
+'REPOSICIàN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÀN EXTENSOR ROUTER',
+'REPOSICION CABLE HDMI/RCA',
+'REPOSICION CONTROL REMOTO',
+'REPOSICIÓN DECODIFICAR HD (HIBRIDO HOMECAST)',
+'REPOSICIÓN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÓN EXTENSOR WIFI',
+'REPOSICION FUENTE',
+'REPOSICION SMARTCARD',
+'REPOSICION TARJETA DECO',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'PAGO DUPLICADO',
+'PERCEPCION IIBB SAN LUIS',
+'PERCEPCION IIBB RIO NEGRO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'REINTEGRO PACK FÚTBOL MES ANTERIOR')
+then importe_linea
+else 0
+end ) as tv_desc,
+
+
+max(
+CASE
+when p.PROMOCIONTPODTO = 'F'
+and d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 2
+when PROMOCIONTPODTO = 'P'
+and d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 1
+else 0
+end
+)as tv_tpodto,
+
+
+max(
+CASE
+when d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+then  1
+else 0
+end
+)as tiene_tv,
+
+max(
+CASE
+when d.PROMO LIKE '%RDP%'
+and d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then  1
+else 0
+end
+)as tv_rdp,
+
+
+max(
+CASE
+when p.promocionclase = 'R'
+and d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 2
+when p.promocionclase = 'N'
+and d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 1
+else 0
+end
+)as tv_promoclase,
+
+sum(case
+when 
+d.PRODUCTOTPO in ('B','Z','W')
+and d.facturatpo = 'F'
+and d.concepto  in(
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'CONEXION E INSTALAC.DE ENLACES')
+then importe_linea
+else 0
+end 
+)as inst_tv,
+
+/*
+---------------------------LOGICA INTERNET---------------------------------------
+*/
+sum(case
+when 
+d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and d.concepto not in(
+'DEVOLUCION POR REINTEGRO',
+'BONIF.INTERRUPCION DE SERVICIO',
+'BONIFICACION ESPECIAL',
+'BONIFICACION INTERRUPCION DE SERVICIO INTERNET',
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'PLAN DE PAGO',
+'RECARGO PAGO FUERA DE TERMINO',
+'RECARGO PAGO FUERA DE TERMINO MESES ANTERIORES',
+'RECONEXION CABLE',
+'RECONEXION INTERNET LITE',
+'REINTEGRO CUOTA',
+'REINTEGRO DE VENTAS',
+'REINTEGRO PARCIAL S/SERVICIO',
+'REINTEGRO PARCIAL SOBRE CUOTA',
+'REINTEGRO TOTAL SOBRE CUOTA',
+'REPARACION DECO',
+'REPOSICIàN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÀN EXTENSOR ROUTER',
+'REPOSICION CABLE HDMI/RCA',
+'REPOSICION CONTROL REMOTO',
+'REPOSICIÓN DECODIFICAR HD (HIBRIDO HOMECAST)',
+'REPOSICIÓN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÓN EXTENSOR WIFI',
+'REPOSICION FUENTE',
+'REPOSICION SMARTCARD',
+'REPOSICION TARJETA DECO',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'PAGO DUPLICADO',
+'PERCEPCION IIBB SAN LUIS',
+'PERCEPCION IIBB RIO NEGRO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'REINTEGRO PACK FÚTBOL MES ANTERIOR')
+then importe_linea
+else 0
+end ) as int_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and d.CPTOFACID not in ('9341','9342','9343','9344')
+and d.concepto not in(
+'DEVOLUCION POR REINTEGRO',
+'BONIF.INTERRUPCION DE SERVICIO',
+'BONIFICACION ESPECIAL',
+'BONIFICACION INTERRUPCION DE SERVICIO INTERNET',
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'PLAN DE PAGO',
+'RECARGO PAGO FUERA DE TERMINO',
+'RECARGO PAGO FUERA DE TERMINO MESES ANTERIORES',
+'RECONEXION CABLE',
+'RECONEXION INTERNET LITE',
+'REINTEGRO CUOTA',
+'REINTEGRO DE VENTAS',
+'REINTEGRO PARCIAL S/SERVICIO',
+'REINTEGRO PARCIAL SOBRE CUOTA',
+'REINTEGRO TOTAL SOBRE CUOTA',
+'REPARACION DECO',
+'REPOSICIàN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÀN EXTENSOR ROUTER',
+'REPOSICION CABLE HDMI/RCA',
+'REPOSICION CONTROL REMOTO',
+'REPOSICIÓN DECODIFICAR HD (HIBRIDO HOMECAST)',
+'REPOSICIÓN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÓN EXTENSOR WIFI',
+'REPOSICION FUENTE',
+'REPOSICION SMARTCARD',
+'REPOSICION TARJETA DECO',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'PAGO DUPLICADO',
+'PERCEPCION IIBB SAN LUIS',
+'PERCEPCION IIBB RIO NEGRO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'REINTEGRO PACK FÚTBOL MES ANTERIOR')
+then importe_linea
+else 0
+end ) as int_desc,
+
+max(
+CASE
+when p.PROMOCIONTPODTO = 'F'
+and d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 2
+when p.PROMOCIONTPODTO = 'P'
+and d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 1
+else 0
+end
+)as int_tpodto,
+
+max(
+CASE
+when p.promocionclase = 'R'
+and d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 2
+when p.promocionclase = 'N'
+and d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 1
+else 0
+end
+)as int_promoclase,
+
+
+max(
+CASE
+when d.PROMO LIKE '%RDP%'
+and d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then  1
+else 0
+end
+)as int_rdp,
+
+
+max(
+CASE
+when d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+then  1
+else 0
+end
+)as tiene_int,
+
+    sum(case
+when 
+d.PRODUCTOTPO in ('C','I','L','E')
+and d.facturatpo = 'F'
+and d.concepto  in(
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'CONEXION E INSTALAC.DE ENLACES')
+then importe_linea
+else 0
+end 
+)as inst_int,
+
+
+/*
+---------------------------LOGICA CORPO------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and d.concepto not in(
+'DEVOLUCION POR REINTEGRO',
+'BONIF.INTERRUPCION DE SERVICIO',
+'BONIFICACION ESPECIAL',
+'BONIFICACION INTERRUPCION DE SERVICIO INTERNET',
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'PLAN DE PAGO',
+'RECARGO PAGO FUERA DE TERMINO',
+'RECARGO PAGO FUERA DE TERMINO MESES ANTERIORES',
+'RECONEXION CABLE',
+'RECONEXION INTERNET LITE',
+'REINTEGRO CUOTA',
+'REINTEGRO DE VENTAS',
+'REINTEGRO PARCIAL S/SERVICIO',
+'REINTEGRO PARCIAL SOBRE CUOTA',
+'REINTEGRO TOTAL SOBRE CUOTA',
+'REPARACION DECO',
+'REPOSICIàN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÀN EXTENSOR ROUTER',
+'REPOSICION CABLE HDMI/RCA',
+'REPOSICION CONTROL REMOTO',
+'REPOSICIÓN DECODIFICAR HD (HIBRIDO HOMECAST)',
+'REPOSICIÓN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÓN EXTENSOR WIFI',
+'REPOSICION FUENTE',
+'REPOSICION SMARTCARD',
+'REPOSICION TARJETA DECO',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'PAGO DUPLICADO',
+'PERCEPCION IIBB SAN LUIS',
+'PERCEPCION IIBB RIO NEGRO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'REINTEGRO PACK FÚTBOL MES ANTERIOR')
+then importe_linea
+else 0
+end ) as int_corpo_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and d.CPTOFACID not in ('9341','9342','9343','9344')
+and d.concepto not in(
+'DEVOLUCION POR REINTEGRO',
+'BONIF.INTERRUPCION DE SERVICIO',
+'BONIFICACION ESPECIAL',
+'BONIFICACION INTERRUPCION DE SERVICIO INTERNET',
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'PLAN DE PAGO',
+'RECARGO PAGO FUERA DE TERMINO',
+'RECARGO PAGO FUERA DE TERMINO MESES ANTERIORES',
+'RECONEXION CABLE',
+'RECONEXION INTERNET LITE',
+'REINTEGRO CUOTA',
+'REINTEGRO DE VENTAS',
+'REINTEGRO PARCIAL S/SERVICIO',
+'REINTEGRO PARCIAL SOBRE CUOTA',
+'REINTEGRO TOTAL SOBRE CUOTA',
+'REPARACION DECO',
+'REPOSICIàN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÀN EXTENSOR ROUTER',
+'REPOSICION CABLE HDMI/RCA',
+'REPOSICION CONTROL REMOTO',
+'REPOSICIÓN DECODIFICAR HD (HIBRIDO HOMECAST)',
+'REPOSICIÓN DECODIFICAR HD (ZAPPER ARION)',
+'REPOSICIÓN EXTENSOR WIFI',
+'REPOSICION FUENTE',
+'REPOSICION SMARTCARD',
+'REPOSICION TARJETA DECO',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'PAGO DUPLICADO',
+'PERCEPCION IIBB SAN LUIS',
+'PERCEPCION IIBB RIO NEGRO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'REINTEGRO PACK FÚTBOL MES ANTERIOR')
+then importe_linea
+else 0
+end ) as int_corpo_desc,
+
+max(
+CASE
+when p.PROMOCIONTPODTO = 'F'
+and d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 2
+when p.PROMOCIONTPODTO = 'P'
+and d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 1
+else 0
+end
+)as int_corpo_tpodto,
+
+max(
+CASE
+when p.promocionclase = 'R'
+and d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 2
+when p.promocionclase = 'N'
+and d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then 1
+else 0
+end
+)as int_corpo_promoclase,
+
+
+max(
+CASE
+when d.PROMO LIKE '%RDP%'
+and d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then  1
+else 0
+end
+)as int_corpo_rdp,
+
+
+max(
+CASE
+when d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+then  1
+else 0
+end
+)as tiene_int_corpo,
+
+    sum(case
+when 
+d.PRODUCTOTPO in ('N')
+and d.facturatpo = 'F'
+and d.concepto  in(
+'INST. CABLE MODEM RESIDENCIAL',
+'INST. CABLE MODEN RECIDENCIAL',
+'INST.CABLE MODEM RESIDENCIAL',
+'INSTALACION CABLE',
+'INSTALACION TV DIGITAL',
+'INSTALACION TV ANALOGICO',
+'CONEXION E INSTALACION DE ENLACES',
+'CONEXIÓN E INSTALACIÓN DE ENLACES',
+'CONEXIÓN E INSTALAC.DE ENLACES',
+'INSTALACION INTERNET CORP GPON 100 MB SIMETRICO (F',
+'INSTALACION INTERNET CORP. GPON 50 MB SIMETRICO',
+'INSTALACION SERVICIO INTERNET RESIDENCIAL LITE',
+'INSTALACION ADICIONALES',
+'INSTALACION BOCA ADICIONAL INTERNET (VINCULO FISIC',
+'INSTALACION BOCAS ADICIONALES FTTH',
+'INSTLAC. 1RA BOCA ADICIONAL',
+'HAB. HBO MAX DIGITAL',
+'HAB. PACK CH 800-801 DIGITAL',
+'HAB. SERVICIO 10 MB',
+'HAB.ADIC.COMBO2 MPREM.',
+'HAB.PACK FULL PREMIUM HD S.AD',
+'HAB.SERVICIO CORPORATIVO 2 MB',
+'HABILITACION DECO HD DIGITAL',
+'HABILITACIÓN DECO HD LITE',
+'HABILITACION FUTBOL',
+'HABILITACION PAQUETE COMPLETO',
+'INSTALACION ABONO BASICO ANALOGICO FTTH',
+'INSTALACION DECO "C"',
+'INSTALACION DECO ADIC. HD FTTH',
+'INSTALACION DECO HD FTTH',
+'INSTALACION EQUIPO DIGITAL',
+'INSTALACION ONU/ONT FTTH',
+'INSTALACION SERVICIO ISP',
+'INSTALACION UHF 12 CANALES',
+'CONEXION E INSTALAC.DE ENLACES')
+then importe_linea
+else 0
+end 
+)as inst_int_corpo,
+
+
+
+/*
+---------------------------LOGICA MIO--------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('M')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and d.productoid in (6402,6409,6418,70044,70048,70049,70050,70061,70061,70062,70063)
+then importe_linea
+else 0
+end ) as mio_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('M')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and d.productoid in (6402,6409,6418,70044,70048,70049,70050,70061,70061,70062,70063)
+then importe_linea
+else 0
+end ) as mio_desc,
+
+max(
+CASE
+when d.PRODUCTOTPO in ('M')
+and d.facturatpo = 'F'
+and d.productoid in (6402,6409,6418,70044,70048,70049,70050,70061,70061,70062,70063)
+then  1
+else 0
+end
+)as tiene_mio,
+
+/*
+---------------------------LOGICA PARAMOUNT-------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('M')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and d.productoid in (6393,6394,6407,70052)
+then importe_linea
+else 0
+end ) as paramount_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('M')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and d.productoid in (6393,6394,6407,70052)
+then importe_linea
+else 0
+end ) as paramount_desc,
+
+max(
+CASE
+when 
+d.PRODUCTOTPO in ('M')
+and d.facturatpo = 'F'
+and d.productoid in (6393,6394,6407,70052)
+then  1
+else 0
+end
+)as tiene_paramount,
+
+/*
+---------------------------LOGICA UNIVERSAL-------------------------------------------
+*/
+
+sum(case
+when 
+d.facturatpo = 'F'
+and d.PROMOID = 0
+and d.productoid in (70041,70042)
+then importe_linea
+else 0
+end ) as UNIVERSAL_pol,
+sum(case
+when 
+d.facturatpo = 'F'
+and d.PROMOID > 0
+and d.productoid in (70041,70042)
+then importe_linea
+else 0
+end ) as UNIVERSAL_desc,
+
+max(
+CASE
+when 
+d.facturatpo = 'F'
+and d.productoid in (70041,70042)
+then  1
+else 0
+end
+)as tiene_UNIVERSAL,
+
+/*
+---------------------------LOGICA MTI--------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('Q')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+then importe_linea
+else 0
+end ) as asist_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('Q')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then importe_linea
+else 0
+end ) as asist_desc,
+
+max(
+CASE
+when 
+d.PRODUCTOTPO in ('Q')
+and d.facturatpo = 'F'
+then  1
+else 0
+end
+)as tiene_asist,
+
+/*
+---------------------------LOGICA DECOS ADIC--------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('D')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and (d.productonombre like '%adic%'
+or d.[SENALSUBTIPO] = 'D. ADICIONALES')
+then importe_linea
+else 0
+end ) as decos_adic_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('D')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and (d.productonombre like '%adic%'
+or d.[SENALSUBTIPO] = 'D. ADICIONALES')
+then importe_linea
+else 0
+end ) as decos_adic_desc,
+
+max(
+CASE
+when 
+d.PRODUCTOTPO in ('D')
+and d.facturatpo = 'F'
+and (d.productonombre like '%adic%'
+or d.[SENALSUBTIPO] = 'D. ADICIONALES')
+then  1
+else 0
+end
+)as tiene_decos_adic,
+
+
+/*
+---------------------------LOGICA DECOS--------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('D')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+and not (d.productonombre like '%adic%'
+or d.[SENALSUBTIPO] = 'D. ADICIONALES')
+then importe_linea
+else 0
+end ) as decos_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('D')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+and not (d.productonombre like '%adic%'
+or d.[SENALSUBTIPO] = 'D. ADICIONALES')
+then importe_linea
+else 0
+end ) as decos_desc,
+
+max(
+CASE
+when 
+d.PRODUCTOTPO in ('D')
+and d.facturatpo = 'F'
+and not (d.productonombre like '%adic%'
+or d.[SENALSUBTIPO] = 'D. ADICIONALES')
+then  1
+else 0
+end
+)as tiene_decos,
+
+/*
+---------------------------LOGICA ADULTOS--------------------------------------------
+*/
+
+
+sum(case
+when d.facturatpo = 'F'
+and d.PRODUCTOTPO IN ('A','O')
+AND (d.PRODUCTONOMBRE LIKE ('%ADULTO%')
+or d.PRODUCTONOMBRE LIKE ('%800-801%')
+or d.[SENALSUBTIPO] = 'ADULTOS')
+AND d.PRODUCTONOMBRE NOT IN (
+'PACK FULL PREMIUM EMPLEADOS SIN ADULTOS',
+'PACK FULL PREMIUM HD EMPLEADOS S/ADULTO')
+and d.PROMOID = 0
+then importe_linea
+else 0
+end ) as adulto_pol,
+
+sum(case
+when d.facturatpo = 'F'
+and d.PRODUCTOTPO IN ('A','O')
+AND (d.PRODUCTONOMBRE LIKE ('%ADULTO%')
+or d.PRODUCTONOMBRE LIKE ('%800-801%')
+or d.[SENALSUBTIPO] = 'ADULTOS')
+AND d.PRODUCTONOMBRE NOT IN (
+'PACK FULL PREMIUM EMPLEADOS SIN ADULTOS',
+'PACK FULL PREMIUM HD EMPLEADOS S/ADULTO')
+and d.PROMOID > 0
+then importe_linea
+else 0
+end ) as adulto_desc,
+
+
+max(
+CASE
+when 
+d.facturatpo = 'F'
+and d.PRODUCTOTPO IN ('A','O')
+AND (d.PRODUCTONOMBRE LIKE ('%ADULTO%')
+or d.PRODUCTONOMBRE LIKE ('%800-801%')
+or d.[SENALSUBTIPO] = 'ADULTOS')
+AND d.PRODUCTONOMBRE NOT IN (
+'PACK FULL PREMIUM EMPLEADOS SIN ADULTOS',
+'PACK FULL PREMIUM HD EMPLEADOS S/ADULTO')
+then  1
+else 0
+end
+)as tiene_adultos,
+
+/*
+---------------------------LOGICA HBO--------------------------------------------
+*/
+
+sum(case
+when d.facturatpo = 'F'
+AND (d.PRODUCTONOMBRE LIKE ('%HBO%')
+or d.[SENALSUBTIPO] = 'HBO')
+and d.PROMOID = 0
+then importe_linea
+else 0
+end ) as HBO_pol,
+sum(case
+when d.facturatpo = 'F'
+AND (d.PRODUCTONOMBRE LIKE ('%HBO%')
+or d.[SENALSUBTIPO] = 'HBO')
+and d.PROMOID > 0
+then importe_linea
+else 0
+end ) as HBO_desc,
+
+
+max(
+CASE
+when 
+d.facturatpo = 'F'
+AND (d.PRODUCTONOMBRE LIKE ('%HBO%')
+or d.[SENALSUBTIPO] = 'HBO')
+then  1
+else 0
+end
+)as tiene_hbo,
+
+/*
+---------------------------LOGICA FUTBOL--------------------------------------------
+*/
+
+
+sum(case
+when d.facturatpo = 'F'
+and d.PROMOID = 0
+and (d.PRODUCTONOMBRE in (
+'PACK FUTBOL MIO',
+'PACK FUTBOL PREMIUM',
+'PACK FUTBOL PREMIUM ANALOGICO',
+'PACK FUTBOL PREMIUM FTTH',
+'PACK FUTBOL PREMIUM SD',
+'PACK FUTBOL UHF')
+or d.[SENALSUBTIPO] = 'FUTBOL')
+then importe_linea
+else 0
+end ) as futbol_pol,
+sum(case
+when d.facturatpo = 'F'
+and d.PROMOID > 0
+and (d.PRODUCTONOMBRE in (
+'PACK FUTBOL MIO',
+'PACK FUTBOL PREMIUM',
+'PACK FUTBOL PREMIUM ANALOGICO',
+'PACK FUTBOL PREMIUM FTTH',
+'PACK FUTBOL PREMIUM SD',
+'PACK FUTBOL UHF')
+or d.[SENALSUBTIPO] = 'FUTBOL')
+then importe_linea
+else 0
+end ) as futbol_desc,
+
+max(
+CASE
+when 
+d.facturatpo = 'F'
+and (d.PRODUCTONOMBRE in (
+'PACK FUTBOL MIO',
+'PACK FUTBOL PREMIUM',
+'PACK FUTBOL PREMIUM ANALOGICO',
+'PACK FUTBOL PREMIUM FTTH',
+'PACK FUTBOL PREMIUM SD',
+'PACK FUTBOL UHF')
+or d.[SENALSUBTIPO] = 'FUTBOL')
+then  1
+else 0
+end
+)as tiene_futbol,
+
+
+/*
+---------------------------LOGICA BOCAS-------------------------------------------
+*/
+
+sum(case
+when 
+d.PRODUCTOTPO in ('R')
+and d.facturatpo = 'F'
+and d.PROMOID = 0
+then importe_linea
+else 0
+end ) as bocas_pol,
+sum(case
+when 
+d.PRODUCTOTPO in ('R')
+and d.facturatpo = 'F'
+and d.PROMOID > 0
+then importe_linea
+else 0
+end ) as bocas_desc,
+
+
+max(
+CASE
+when 
+d.PRODUCTOTPO in ('R')
+and d.facturatpo = 'F'
+then  1
+else 0
+end
+)as tiene_bocas,
+
+/*
+---------------------------LOGICA FACT ANTERIOR--------------------------------------------
+*/ 
+
+sum(case
+when 
+d.facturatpo = 'N'
+then importe_linea*-1
+else 0
+end ) as notacred,
+sum(case
+when 
+d.facturatpo = 'D'
+then importe_linea
+else 0
+end ) as notadeb
+,(select  sum(
+case
+when
+x.facturatpo = 'F'or 
+x.facturatpo = 'D' then
+x.importe_linea
+when
+x.facturatpo = 'N'
+then x.importe_linea * -1
+else 0
+end)
+from detalle x
+where x.EMPRESAID = d.EMPRESAID
+and x.CLIENTENRO = d.CLIENTENRO
+and x.PERIODO+1 = d.PERIODO   ---COMENTAR ESTO SI ES PRIMER MES DEL AÑO  --<--CAMBIAR
+--and x.PERIODO+89 = d.PERIODO ---DESCOMENTAR ESTO SI ES PRIMER MES DEL AÑO  --<--CAMBIAR
+) as factanterior
+
+/*
+---------------------------TABLAS Y JOINS--------------------------------------------
+*/  
+
+from detalle d
+inner join factura e
+on d.empresaid = e.empresaid
+and d.facturanro = e.facturanro
+and d.clientenro = e.clientenro
+and d.facturatpo = e.facturatpo
+and d.periodo = e.periodo
+--and d.clientenro <> 5754893
+left join sigasc.promocion p
+on d.empresaid = p.empresaid
+and d.promoid = p.promocionid
+LEFT JOIN sigasc.vm_cliente cl ON d.clientenro = cl.clientenro AND d.empresaid = cl.empresaid
+LEFT JOIN sigasc.clientetpo ct on cl.clientetpo = ct.clientetpo
+
+where d.PERIODO in (202406,202407) --<---- CAMBIAR
+
+group by d.empresaid, d.clientenro,d.PERIODO;
+```
